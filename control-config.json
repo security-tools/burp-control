@@ -2,7 +2,7 @@
   "proxy_url": "localhost:8888",
   "api_url": "http://localhost:8090",
   "report_type": "HTLM",
-  "spider_targets": [
+  "crawl_targets": [
     "https://crimdrac-jhipster-5-demo.herokuapp.com"
   ],
   "scan_targets": [

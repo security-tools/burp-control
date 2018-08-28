@@ -2,7 +2,7 @@
   "proxy_url": "localhost:8888",
   "api_url": "http://localhost:8090",
   "report_type": "HTLM",
-  "spider_targets": [
+  "crawl_targets": [
     "http://google-gruyere.appspot.com"
   ],
   "scan_targets": [

@@ -19,13 +19,13 @@ program
     .version(version);
 
 program
-    .command('spider [config]')
-    .description('spider using the specified configuration file')
-    .action((config) => spiderAction(config));
+    .command('crawl [config]')
+    .description('Crawl using the specified configuration file')
+    .action((config) => crawlAction(config));
 
 program
     .command('scan [config]')
-    .description('scan using the specified configuration file')
+    .description('Scan using the specified configuration file')
     .action((config) => scanAction(config));
 
 program
@@ -40,7 +40,7 @@ program
 
 program
     .command('all [config]')
-    .description('Spider, scan, and generate a report using the specified configuration file')
+    .description('Crawl, scan, and generate a report using the specified configuration file')
     .action((config) => allAction(config));
 
 program.on('command:*', function () {
@@ -108,24 +108,24 @@ function allAction(configfile) {
     let config = loadConfiguration(configfile || 'control-config.json');
     let status = -1;
     do {
-        status = spiderStatus(config.api_url);c
+        status = crawlStatus(config.api_url);c
         console.log('Status: ' + status);
 
     } while (status != 100);
 }
 
-function spiderAction(configfile) {
+function crawlAction(configfile) {
     printIntro();
     let config = loadConfiguration(configfile || 'control-config.json');
     updateScope(config.api_url, config.targetScope);
     // console.log(config);
-    console.log('[+] Spider started ...');
-    config.spider_targets.forEach(function(entry) {
-        spider(config.api_url, entry);
+    console.log('[+] Crawl started ...');
+    config.crawl_targets.forEach(function(entry) {
+        crawl(config.api_url, entry);
     });
 
-    pollSpiderStatus(config.api_url);
-    console.log('[+] Spider completed');
+    pollCrawlStatus(config.api_url);
+    console.log('[+] Crawl completed');
 }
 
 function getReport(apiUrl) {
@@ -144,14 +144,14 @@ function getReport(apiUrl) {
     });
 }
 
-function pollSpiderStatus(apiUrl) {
+function pollCrawlStatus(apiUrl) {
     let status = -1;
     do {
         sleep(1000);
-        status = spiderStatus(apiUrl);
+        status = crawlStatus(apiUrl);
         //process.stdout.clearLine();
         //process.stdout.cursorTo(0);
-        process.stdout.write('\r[-] Spider in progress: {}%'.format(status));
+        process.stdout.write('\r[-] Crawl in progress: {}%'.format(status));
 
     } while (status != 100);
     console.log();
@@ -197,20 +197,20 @@ function includeInScope(apiUrl, url) {
     console.log('[-] Included in scope: {}'.format(url));
 }
 
-function spider(apiUrl, baseUrl) {
-    //console.log('Adding to the spider queue: {}'.format(baseUrl));
+function crawl(apiUrl, baseUrl) {
+    //console.log('Adding to the crawl queue: {}'.format(baseUrl));
     let response = request('POST', '{}/burp/spider?baseUrl={}'.format(apiUrl, baseUrl));
     handleResponse(response);
-    console.log('[-] Added to the spider queue: {}'.format(baseUrl));
+    console.log('[-] Added to the crawl queue: {}'.format(baseUrl));
 }
 
-function spiderStatus(apiUrl) {
+function crawlStatus(apiUrl) {
     let response = request('GET', '{}/burp/spider/status'.format(apiUrl));
    return JSON.parse(response.getBody('utf8'))['spiderPercentage'];
 }
 
 function scan(apiUrl, baseUrl) {
-    //console.log('Adding to the spider queue: {}'.format(baseUrl));
+    //console.log('Adding to the crawl queue: {}'.format(baseUrl));
     let response = request('POST', '{}/burp/scanner/scans/active?baseUrl={}'.format(apiUrl, baseUrl));
     handleResponse(response);
     console.log('[-] Added to the scan queue: {}'.format(baseUrl));
