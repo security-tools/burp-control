@@ -1,0 +1,266 @@
+#!/usr/bin/env node
+'use strict';
+const program = require('commander');
+const figlet = require('figlet');
+const chalk = require('chalk');
+const tmp = require('tmp');
+const format = require('string-format')
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+//const request = require('request');
+const request = require('sync-request');
+
+const version = '0.0.1';
+
+format.extend(String.prototype, {})
+
+program
+    .version(version);
+
+program
+    .command('spider [config]')
+    .description('spider using the specified configuration file')
+    .action((config) => spiderAction(config));
+
+program
+    .command('scan [config]')
+    .description('scan using the specified configuration file')
+    .action((config) => scanAction(config));
+
+program
+    .command('report [config]')
+    .description('Generate a report using the specified configuration file')
+    .action((config) => reportAction(config));
+
+program
+    .command('stop [config]')
+    .description('Stopping burp using the specified configuration file')
+    .action((config) => stopAction(config));
+
+program
+    .command('all [config]')
+    .description('Spider, scan, and generate a report using the specified configuration file')
+    .action((config) => allAction(config));
+
+program.on('command:*', function () {
+    console.error('Invalid command: %s\nSee --help for a list of available commands.', program.args.join(' '));
+    process.exit(1);
+});
+
+program.parse(process.argv);
+
+function printIntro() {
+
+    console.log(
+            chalk.blue(
+                figlet.textSync('Burp Controller', { font: 'ogre'})
+        )
+    );
+    console.log('Burp Controller ' + version);
+    console.log('');
+}
+
+function stopAction(configfile) {
+    printIntro();
+    let config = loadConfiguration(configfile || 'control-config.json');
+    console.log('[+] Shutting down the Burp Suite ...');
+    let response = request('GET', '{}/burp/stop'.format(config.api_url));
+    handleResponse(response);
+    console.log('[-] Burp Suite is stopped');
+}
+
+function reportAction(configfile) {
+    printIntro();
+    getReport(loadConfiguration(configfile || 'control-config.json').api_url);
+}
+
+function scanAction(configfile) {
+    try {
+
+        let config = loadConfiguration(configfile || 'control-config.json');
+        updateScope(config.api_url, config.targetScope);
+        console.log('[+] Active scan started ...');
+
+        config.scan_targets.forEach(function(entry) {
+            scan(config.api_url, entry);
+        });
+
+        pollScanStatus(config.api_url);
+        console.log('[+] Scan completed')
+        console.log('[+] Scan issues:');
+
+        let issueNames = new Set();
+        let issues = getIssues(config.api_url).forEach(function(issue) {
+            issueNames.add(issue.issueName);
+        });
+
+        issueNames.forEach(function(issue) {
+            console.log('    {}'.format(issue));
+        });
+    }
+    catch(e) {
+        console.log('Scan aborted: {}'.format(e.message));
+    }
+}
+
+function allAction(configfile) {
+    let config = loadConfiguration(configfile || 'control-config.json');
+    let status = -1;
+    do {
+        status = spiderStatus(config.api_url);c
+        console.log('Status: ' + status);
+
+    } while (status != 100);
+}
+
+function spiderAction(configfile) {
+    printIntro();
+    let config = loadConfiguration(configfile || 'control-config.json');
+    updateScope(config.api_url, config.targetScope);
+    // console.log(config);
+    console.log('[+] Spider started ...');
+    config.spider_targets.forEach(function(entry) {
+        spider(config.api_url, entry);
+    });
+
+    pollSpiderStatus(config.api_url);
+    console.log('[+] Spider completed');
+}
+
+function getReport(apiUrl) {
+    let response = request('GET', '{}/burp/report?reportType=HTML'.format(apiUrl));
+    handleResponse(response);
+    console.log('[+] Downloading HTML/XML report');
+    let filename = path.join(tmp.dirSync().name, 'burp-report-{}.{}'.format(
+        new Date().toISOString(),
+        'html'));
+
+    fs.writeFile(filename, response.body, function(err) {
+        if (err) {
+            throw err;
+        }
+        console.log('[-] Scan report saved to {}'.format(filename));
+    });
+}
+
+function pollSpiderStatus(apiUrl) {
+    let status = -1;
+    do {
+        sleep(1000);
+        status = spiderStatus(apiUrl);
+        //process.stdout.clearLine();
+        //process.stdout.cursorTo(0);
+        process.stdout.write('\r[-] Spider in progress: {}%'.format(status));
+
+    } while (status != 100);
+    console.log();
+}
+
+function pollScanStatus(apiUrl) {
+    let status = -1;
+    do {
+        sleep(1000);
+        status = scanStatus(apiUrl);
+        //process.stdout.clearLine();
+        //process.stdout.cursorTo(0);
+        process.stdout.write('\r[-] Scan in progress: {}%'.format(status));
+
+    } while (status != 100);
+    console.log();
+}
+
+
+function updateScope(apiUrl, scope) {
+    console.log('[+] Updating the scope ...');
+    scope.include.forEach(function(entry) {
+       includeInScope(apiUrl, entry)
+    });
+    scope.exclude.forEach(function(entry) {
+        excludeFromScope(apiUrl, entry);
+    });
+    console.log('[+] Scope updated');
+
+}
+
+function excludeFromScope(apiUrl, url) {
+    //console.log('Excluding from scope...: {}'.format(url));
+    let response = request('DELETE', '{}/burp/target/scope?url={}'.format(apiUrl, url));
+    handleResponse(response);
+    console.log('[-] Excluded from scope: {}'.format(url));
+}
+
+function includeInScope(apiUrl, url) {
+    // console.log('Including in scope...: {}'.format(url));
+    let response = request('PUT', '{}/burp/target/scope?url={}'.format(apiUrl, url));
+    handleResponse(response);
+    console.log('[-] Included in scope: {}'.format(url));
+}
+
+function spider(apiUrl, baseUrl) {
+    //console.log('Adding to the spider queue: {}'.format(baseUrl));
+    let response = request('POST', '{}/burp/spider?baseUrl={}'.format(apiUrl, baseUrl));
+    handleResponse(response);
+    console.log('[-] Added to the spider queue: {}'.format(baseUrl));
+}
+
+function spiderStatus(apiUrl) {
+    let response = request('GET', '{}/burp/spider/status'.format(apiUrl));
+   return JSON.parse(response.getBody('utf8'))['spiderPercentage'];
+}
+
+function scan(apiUrl, baseUrl) {
+    //console.log('Adding to the spider queue: {}'.format(baseUrl));
+    let response = request('POST', '{}/burp/scanner/scans/active?baseUrl={}'.format(apiUrl, baseUrl));
+    handleResponse(response);
+    console.log('[-] Added to the scan queue: {}'.format(baseUrl));
+}
+
+function scanStatus(apiUrl) {
+    let response = request('GET', '{}/burp/scanner/status'.format(apiUrl));
+    return JSON.parse(response.getBody('utf8'))['scanPercentage'];
+}
+
+function getIssues(apiUrl) {
+    let response = request('GET', '{}/burp/scanner/issues'.format(apiUrl));
+    return JSON.parse(response.getBody('utf8'))['issues'];
+}
+
+function loadConfiguration(filename) {
+
+    var contents;
+    try {
+        contents = fs.readFileSync(filename || "control-config.json");
+    } catch(e) {
+        if (e.code === 'ENOENT') {
+            throw new Error('Configuration file {} not found'.format(filename));
+        } else {
+            throw e;
+        }
+    }
+
+    try {
+        return JSON.parse(contents);
+
+    } catch(e) {
+        throw new Error('Unable to parse configuration {}'.format(filename));
+    }
+}
+
+function handleResponse(response) {
+    if (response.statusCode >= 300) {
+        let err = new Error('API status error: {}'.format(response.statusCode));
+        err.statusCode = response.statusCode;
+        err.headers = response.headers;
+        err.body = response.body.toString('utf-8');
+        throw err;
+    }
+}
+
+
+function sleep(ms) {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+function xsleep(n) {
+    msleep(n*1000);
+}
