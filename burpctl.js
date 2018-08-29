@@ -7,11 +7,10 @@ const tmp = require('tmp');
 const format = require('string-format')
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
-//const request = require('request');
 const request = require('sync-request');
 
 const version = '0.0.1';
+const default_configile = 'control-config.json'
 
 format.extend(String.prototype, {})
 
@@ -31,7 +30,8 @@ program
 program
     .command('report [config]')
     .description('Generate a report using the specified configuration file')
-    .action((config) => reportAction(config));
+    .option('-f, --file <file>', 'Report file')
+    .action((config, options) => reportAction(config, options));
 
 program
     .command('stop [config]')
@@ -51,7 +51,6 @@ program.on('command:*', function () {
 program.parse(process.argv);
 
 function printIntro() {
-
     console.log(
             chalk.blue(
                 figlet.textSync('Burp Controller', { font: 'ogre'})
@@ -62,23 +61,32 @@ function printIntro() {
 }
 
 function stopAction(configfile) {
-    printIntro();
-    let config = loadConfiguration(configfile || 'control-config.json');
-    console.log('[+] Shutting down the Burp Suite ...');
-    let response = request('GET', '{}/burp/stop'.format(config.api_url));
-    handleResponse(response);
-    console.log('[-] Burp Suite is stopped');
+    try {
+        printIntro();
+        let config = loadConfiguration(configfile || default_configile);
+        console.log('[+] Shutting down the Burp Suite ...');
+        let response = request('GET', '{}/burp/stop'.format(config.api_url));
+        handleResponse(response);
+        console.log('[-] Burp Suite is stopped');
+    }
+    catch(e) {
+            console.log('Stop failed: {}'.format(e.message));
+    }
 }
 
-function reportAction(configfile) {
-    printIntro();
-    getReport(loadConfiguration(configfile || 'control-config.json').api_url);
+function reportAction(configfile, options) {
+    try {
+        printIntro();
+        getReport(loadConfiguration(configfile || default_configile).api_url, options.file);
+    }
+    catch(e) {
+        console.log('Report download failed: {}'.format(e.message));
+    }
 }
 
 function scanAction(configfile) {
     try {
-
-        let config = loadConfiguration(configfile || 'control-config.json');
+        let config = loadConfiguration(configfile || default_configile);
         updateScope(config.api_url, config.targetScope);
         console.log('[+] Active scan started ...');
 
@@ -91,7 +99,7 @@ function scanAction(configfile) {
         console.log('[+] Scan issues:');
 
         let issueNames = new Set();
-        let issues = getIssues(config.api_url).forEach(function(issue) {
+        getIssues(config.api_url).forEach(function(issue) {
             issueNames.add(issue.issueName);
         });
 
@@ -100,39 +108,37 @@ function scanAction(configfile) {
         });
     }
     catch(e) {
-        console.log('Scan aborted: {}'.format(e.message));
+        console.log('Scan failed: {}'.format(e.message));
+    }
+}
+
+function crawlAction(configfile) {
+    try {
+        printIntro();
+        let config = loadConfiguration(configfile || default_configile);
+        updateScope(config.api_url, config.targetScope);
+        console.log('[+] Crawl started ...');
+        config.crawl_targets.forEach(function (entry) {
+            crawl(config.api_url, entry);
+        });
+
+        pollCrawlStatus(config.api_url);
+        console.log('[+] Crawl completed');
+    }
+    catch(e) {
+        console.log('Crawl failed: {}'.format(e.message));
     }
 }
 
 function allAction(configfile) {
-    let config = loadConfiguration(configfile || 'control-config.json');
-    let status = -1;
-    do {
-        status = crawlStatus(config.api_url);c
-        console.log('Status: ' + status);
-
-    } while (status != 100);
+    throw new Error('Not implemented');
 }
 
-function crawlAction(configfile) {
-    printIntro();
-    let config = loadConfiguration(configfile || 'control-config.json');
-    updateScope(config.api_url, config.targetScope);
-    // console.log(config);
-    console.log('[+] Crawl started ...');
-    config.crawl_targets.forEach(function(entry) {
-        crawl(config.api_url, entry);
-    });
-
-    pollCrawlStatus(config.api_url);
-    console.log('[+] Crawl completed');
-}
-
-function getReport(apiUrl) {
+function getReport(apiUrl, reportfile) {
     let response = request('GET', '{}/burp/report?reportType=HTML'.format(apiUrl));
     handleResponse(response);
     console.log('[+] Downloading HTML/XML report');
-    let filename = path.join(tmp.dirSync().name, 'burp-report-{}.{}'.format(
+    let filename = reportfile || path.join(tmp.dirSync().name, 'burp-report-{}.{}'.format(
         new Date().toISOString(),
         'html'));
 
@@ -145,12 +151,10 @@ function getReport(apiUrl) {
 }
 
 function pollCrawlStatus(apiUrl) {
-    let status = -1;
+    let status = 0;
     do {
         sleep(1000);
         status = crawlStatus(apiUrl);
-        //process.stdout.clearLine();
-        //process.stdout.cursorTo(0);
         process.stdout.write('\r[-] Crawl in progress: {}%'.format(status));
 
     } while (status != 100);
@@ -158,12 +162,10 @@ function pollCrawlStatus(apiUrl) {
 }
 
 function pollScanStatus(apiUrl) {
-    let status = -1;
+    let status = 0;
     do {
         sleep(1000);
         status = scanStatus(apiUrl);
-        //process.stdout.clearLine();
-        //process.stdout.cursorTo(0);
         process.stdout.write('\r[-] Scan in progress: {}%'.format(status));
 
     } while (status != 100);
@@ -230,7 +232,7 @@ function loadConfiguration(filename) {
 
     var contents;
     try {
-        contents = fs.readFileSync(filename || "control-config.json");
+        contents = fs.readFileSync(filename || default_configile);
     } catch(e) {
         if (e.code === 'ENOENT') {
             throw new Error('Configuration file {} not found'.format(filename));
@@ -257,10 +259,6 @@ function handleResponse(response) {
     }
 }
 
-
 function sleep(ms) {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-}
-function xsleep(n) {
-    msleep(n*1000);
 }
