@@ -8,9 +8,11 @@ const format = require('string-format')
 const fs = require('fs');
 const path = require('path');
 const request = require('sync-request');
+const spawn = require('child_process').spawn;
+
 
 const version = '0.0.1';
-const default_configfile = 'control-config.json'
+const default_configfile = 'config.json'
 
 format.extend(String.prototype, {})
 
@@ -32,6 +34,11 @@ program
     .description('Generate a report using the specified configuration file')
     .option('-f, --file <file>', 'Report file')
     .action((config, options) => reportAction(config, options));
+
+program
+    .command('start [config]')
+    .description('Stopping burp using the specified configuration file')
+    .action((config) => startAction(config));
 
 program
     .command('stop [config]')
@@ -71,6 +78,26 @@ function stopAction(configfile) {
     }
     catch(e) {
             console.log('Stop failed: {}'.format(e.message));
+    }
+}
+
+function startAction(configfile) {
+    try {
+        printIntro();
+        let config = loadConfiguration(configfile || default_configfile);
+        console.log('[+] Starting the Burp Suite ...');
+
+        var prc = spawn('java',  ['-jar', '-Xmx512M', config.burp_lib], {
+            detached: true,
+        });
+        console.log("[-] Burp Suite pid: {}".format(prc.pid));
+        prc.unref();
+
+        console.log('[-] Burp Suite is started');
+        process.exit();
+    }
+    catch(e) {
+        console.log('Stop failed: {}'.format(e.message));
     }
 }
 
@@ -230,7 +257,7 @@ function getIssues(apiUrl) {
 
 function loadConfiguration(filename) {
 
-    var contents;
+    let contents;
     try {
         contents = fs.readFileSync(filename || default_configfile);
     } catch(e) {

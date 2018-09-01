@@ -4,12 +4,11 @@
   "description": "A command-line interface for controlling burp suite",
   "main": "burpctl.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "testx": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "GPL-3.0-only",
   "dependencies": {
-    "axios": "^0.18.0",
     "chalk": "^2.4.1",
     "commander": "^2.17.1",
     "figlet": "^1.2.0",

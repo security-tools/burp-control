@@ -1,0 +1,17 @@
+{
+  "burp_lib": "/Users/had/Projects/Private/tools/scanners/burp-1.x/burpsuite_pro.jar",
+  "proxy_url": "localhost:8888",
+  "api_url": "http://localhost:8090",
+  "report_type": "HTLM",
+  "crawl_targets": [
+    "https://crimdrac-jhipster-5-demo.herokuapp.com",
+    "https://crimdrac-jhipster-5-demo.herokuapp.com/#/docs"
+  ],
+  "scan_targets": [
+    "https://crimdrac-jhipster-5-demo.herokuapp.com/api"
+  ],
+  "targetScope": {
+    "include": [ "https://crimdrac-jhipster-5-demo.herokuapp.com" ],
+    "exclude": [ "http://ignore.com" ]
+  }
+}
