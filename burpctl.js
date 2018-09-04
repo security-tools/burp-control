@@ -45,6 +45,12 @@ program
     .description('Stopping burp using the specified configuration file')
     .action((config) => stopAction(config));
 
+
+program
+    .command('status [config]')
+    .description('Return the Burp status using the specified configuration file')
+    .action((config) => statusAction(config));
+
 program
     .command('all [config]')
     .description('Crawl, scan, and generate a report using the specified configuration file')
@@ -87,8 +93,10 @@ function startAction(configfile) {
         let config = loadConfiguration(configfile || default_configfile);
         console.log('[+] Starting the Burp Suite ...');
 
-        var prc = spawn('java',  ['-jar', '-Xmx512M', config.burp_lib], {
+        let prc = spawn('java',  ['-jar', config.burp_lib, '-Xmx1024M', '--headless.mode=true'], {
+            shell: true,
             detached: true,
+            stdio: ['ignore', fs.openSync('std.out', 'w'), fs.openSync('err.out', 'w')]
         });
         console.log("[-] Burp Suite pid: {}".format(prc.pid));
         prc.unref();
@@ -157,8 +165,28 @@ function crawlAction(configfile) {
     }
 }
 
+function statusAction(configfile) {
+    try {
+        printIntro();
+        let config = loadConfiguration(configfile || default_configfile);
+        console.log('[+] Retrieving status ...');
+        getStatus(config.api_url);
+        console.log('[+] Retrieving status completed');
+    }
+    catch(e) {
+        console.log('Retrieving status failed: {}'.format(e.message));
+    }
+}
+
 function allAction(configfile) {
     throw new Error('Not implemented');
+}
+
+function getStatus(apiUrl) {
+    let response = request('GET', '{}/burp/versions'.format(apiUrl));
+    handleResponse(response);
+    let burpVersion = JSON.parse(response.getBody('utf8'))['burpVersion']
+    console.log('[-] {} is running'.format(burpVersion));
 }
 
 function getReport(apiUrl, reportfile) {

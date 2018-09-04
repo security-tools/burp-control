@@ -1,5 +1,5 @@
 {
-  "burp_lib": "/Users/had/Projects/Private/tools/scanners/burp-1.x/burpsuite_pro.jar",
+  "burp_lib": "/Users/had/Projects/Private/tools/scanners/burp-1.x/burp-rest-api-1.0.3.jar",
   "proxy_url": "localhost:8888",
   "api_url": "http://localhost:8090",
   "report_type": "HTLM",
