@@ -4,7 +4,7 @@ const program = require('commander');
 const figlet = require('figlet');
 const chalk = require('chalk');
 const tmp = require('tmp');
-const format = require('string-format')
+const format = require('string-format');
 const fs = require('fs');
 const path = require('path');
 const request = require('sync-request');
@@ -12,10 +12,10 @@ const spawn = require('child_process').spawn;
 
 
 const version = '0.2.0';
-const default_configfile = 'config.json'
+const default_configfile = 'config.json';
 const max_startup_time = 20;
 
-format.extend(String.prototype, {})
+format.extend(String.prototype, {});
 
 program
     .version(version);
@@ -135,7 +135,7 @@ function scanAction(configfile) {
         });
 
         pollScanStatus(config.api_url);
-        console.log('[+] Scan completed')
+        console.log('[+] Scan completed');
         console.log('[+] Scan issues:');
 
         let issueNames = new Set();
@@ -144,7 +144,7 @@ function scanAction(configfile) {
         });
 
         issueNames.forEach(function(issue) {
-            console.log('    {}'.format(issue));
+            console.log('  - {}'.format(issue));
         });
     }
     catch(e) {
@@ -191,7 +191,7 @@ function allAction(configfile) {
 function getBurpVersion(apiUrl) {
     let response = request('GET', '{}/burp/versions'.format(apiUrl));
     handleResponse(response);
-    return JSON.parse(response.getBody('utf8'))['burpVersion']
+    return JSON.parse(response.getBody('utf8')).burpVersion;
 }
 
 function getReport(apiUrl, reportfile) {
@@ -216,7 +216,7 @@ function waitUntilBurpIsReady(apiUrl) {
     let burpVersion;
     do {
         sleep(1000);
-        elapsedSeconds += 1
+        elapsedSeconds += 1;
         try {
             burpVersion = getBurpVersion(apiUrl);
             break;
@@ -262,7 +262,7 @@ function pollScanStatus(apiUrl) {
 function updateScope(apiUrl, scope) {
     console.log('[+] Updating the scope ...');
     scope.include.forEach(function(entry) {
-       includeInScope(apiUrl, entry)
+       includeInScope(apiUrl, entry);
     });
     scope.exclude.forEach(function(entry) {
         excludeFromScope(apiUrl, entry);
@@ -294,7 +294,7 @@ function crawl(apiUrl, baseUrl) {
 
 function crawlStatus(apiUrl) {
     let response = request('GET', '{}/burp/spider/status'.format(apiUrl));
-   return JSON.parse(response.getBody('utf8'))['spiderPercentage'];
+   return JSON.parse(response.getBody('utf8')).spiderPercentage;
 }
 
 function scan(apiUrl, baseUrl) {
@@ -306,12 +306,12 @@ function scan(apiUrl, baseUrl) {
 
 function scanStatus(apiUrl) {
     let response = request('GET', '{}/burp/scanner/status'.format(apiUrl));
-    return JSON.parse(response.getBody('utf8'))['scanPercentage'];
+    return JSON.parse(response.getBody('utf8')).scanPercentage;
 }
 
 function getIssues(apiUrl) {
     let response = request('GET', '{}/burp/scanner/issues'.format(apiUrl));
-    return JSON.parse(response.getBody('utf8'))['issues'];
+    return JSON.parse(response.getBody('utf8')).issues;
 }
 
 function loadConfiguration(filename) {
