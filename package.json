@@ -2,11 +2,21 @@
   "name": "burp-control",
   "version": "0.0.1",
   "description": "A command-line interface for controlling burp suite",
-  "main": "burpctl.js",
-  "scripts": {
-    "testx": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "src/burpctl.js",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/..."
+  },
+  "bugs": {
+    "url": "https://github.com/..../issues"
+  },
+  "bin": {
+    "burpctl": "src/burpctl.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "license": "GPL-3.0-only",
   "dependencies": {
     "chalk": "^2.4.1",
