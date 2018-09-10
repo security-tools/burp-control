@@ -51,11 +51,6 @@ program
     .description('Return the Burp status using the specified configuration file')
     .action((config) => statusAction(config));
 
-program
-    .command('all [config]')
-    .description('Crawl, scan, and generate a report using the specified configuration file')
-    .action((config) => allAction(config));
-
 program.on('command:*', function () {
     console.error('Invalid command: %s\nSee --help for a list of available commands.', program.args.join(' '));
     process.exit(1);
@@ -183,10 +178,6 @@ function statusAction(configfile) {
     catch(e) {
         console.log('Retrieving status failed: {}'.format(e.message));
     }
-}
-
-function allAction(configfile) {
-    throw new Error('Not implemented');
 }
 
 function getBurpVersion(apiUrl) {
