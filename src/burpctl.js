@@ -12,14 +12,13 @@ const request = require('sync-request');
 const spawn = require('child_process').spawn;
 
 
-const version = '0.2.0';
 const default_configfile = 'config.json';
 const max_startup_time = 20;
 
 format.extend(String.prototype, {});
 
 program
-    .version(version);
+    .version(getVersion());
 
 program
     .command('crawl [config]')
@@ -75,8 +74,9 @@ function printIntro() {
                 figlet.textSync('Burp Controller', { font: 'ogre'})
         )
     );
-    console.log('Burp Controller ' + version);
+    console.log('Burp Controller {}'.format(getVersion()));
     console.log('');
+
 }
 
 function stopAction(configfile) {
@@ -348,4 +348,15 @@ function handleResponse(response) {
 
 function sleep(ms) {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+function getVersion() {
+    let packagefile = path.resolve(__dirname + "/../package.json");
+    try {
+        let packageconfig = fs.readFileSync(packagefile);
+        return JSON.parse(packageconfig).version;
+    } catch(e) {
+        return 'unknown';
+    }
+
 }
