@@ -98,7 +98,7 @@ function startAction(configfile) {
         let prc = spawn('java',  ['-jar', config.burp_lib, '-Xmx1024M', '--headless.mode=true'], {
             shell: true,
             detached: true,
-            stdio: ['ignore', fs.openSync('std.out', 'w'), fs.openSync('err.out', 'w')]
+            stdio: ['ignore', fs.openSync('stdout.log', 'w'), fs.openSync('errout.log', 'w')]
         });
         console.log("[-] Burp Suite pid: {}".format(prc.pid));
         prc.unref();

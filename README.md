@@ -62,7 +62,7 @@ java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
 ### Command-line options
 
 ```sh
-Usage: burpctl [options] [command]
+  Usage: burpctl [options] [command]
 
   Options:
 
@@ -74,9 +74,9 @@ Usage: burpctl [options] [command]
     crawl [config]             Crawl using the specified configuration file
     scan [config]              Scan using the specified configuration file
     report [options] [config]  Generate a report using the specified configuration file
-    start [config]             Stopping burp using the specified configuration file
-    stop [config]              Stopping burp using the specified configuration file
-    all [config]               Crawl, scan, and generate a report using the specified configuration file
+    start [config]             Stopping Burp using the specified configuration file
+    stop [config]              Stopping Burp using the specified configuration file
+    status [config]            Return the Burp status using the specified configuration file
 
 ```
 
@@ -85,7 +85,9 @@ Usage: burpctl [options] [command]
 1. Create a config.json file containing the URL(s) of the target application.
 
 2. Start up Burp with the API Extension
-
+```sh
+burpctl start
+```
 3. Crawl the application by running
 ```sh
 burpctl crawl
