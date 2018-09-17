@@ -42,6 +42,7 @@ java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
 
 ```json
 {
+  "burp_lib": "burp-rest-api-1.0.3.jar",
   "proxy_url": "localhost:8888",
   "api_url": "http://localhost:8090",
   "report_type": "HTLM",
@@ -85,23 +86,26 @@ java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
 1. Create a config.json file containing the URL(s) of the target application.
 
 2. Start up Burp with the API Extension
-```sh
-burpctl start
-```
+    ```sh
+    burpctl start
+    ```
+    
 3. Crawl the application by running
-```sh
-burpctl crawl
-```
-4. Optionally run UI tests (e.g., pupeteer test using Burp as a proxy).
+    ```sh
+    burpctl crawl
+    ```
+
+4. Optionally run UI tests or an UI crawler (e.g., puppeteer tests using Burp as a proxy).
 
 5. Actively scan the application by running
-```sh
-burpctl scan
-```
+    ```sh
+    burpctl scan
+    ```
+
 6. Generate a report with
-```sh
-burpctl report
-```
+    ```sh
+    burpctl report
+    ```
 
 
 [Burp Suite Professional]: https://portswigger.net/burp
