@@ -1,0 +1,9 @@
+*config.json
+*.log
+*.xml
+*.html
+*.bak
+*.iml
+*.xsl
+*.txt
+.*

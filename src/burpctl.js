@@ -11,7 +11,6 @@ const path = require('path');
 const request = require('sync-request');
 const spawn = require('child_process').spawn;
 
-
 const default_configfile = 'config.json';
 const max_startup_time = 20;
 
@@ -67,7 +66,7 @@ if (!process.argv.slice(2).length) {
 function printIntro() {
     console.log(
             chalk.blue(
-                figlet.textSync('Burp Controller', { font: 'ogre'})
+                figlet.textSync('BurpControl', { font: 'ogre'})
         )
     );
     console.log('Burp Controller {}'.format(getVersion()));
@@ -105,6 +104,7 @@ function startAction(configfile) {
         prc.unref();
         waitUntilBurpIsReady(config.api_url);
         console.log('[-] Burp Suite is started');
+        updateScope(config.api_url, config.targetScope);
     }
     catch(e) {
         console.log('Start failed: {}'.format(e.message));
@@ -198,7 +198,7 @@ function getReport(apiUrl, reportfile, reporttype) {
     console.log('[+] Downloading HTML/XML report');
     let filename = reportfile || path.join(tmp.dirSync().name, 'burp-report-{}.{}'.format(
         new Date().toISOString(),
-        'html'));
+        reporttype));
 
     fs.writeFile(filename, response.body, function(err) {
         if (err) {
@@ -270,21 +270,18 @@ function updateScope(apiUrl, scope) {
 }
 
 function excludeFromScope(apiUrl, url) {
-    //console.log('Excluding from scope...: {}'.format(url));
     let response = request('DELETE', '{}/burp/target/scope?url={}'.format(apiUrl, url));
     handleResponse(response);
     console.log('[-] Excluded from scope: {}'.format(url));
 }
 
 function includeInScope(apiUrl, url) {
-    // console.log('Including in scope...: {}'.format(url));
     let response = request('PUT', '{}/burp/target/scope?url={}'.format(apiUrl, url));
     handleResponse(response);
     console.log('[-] Included in scope: {}'.format(url));
 }
 
 function crawl(apiUrl, baseUrl) {
-    //console.log('Adding to the crawl queue: {}'.format(baseUrl));
     let response = request('POST', '{}/burp/spider?baseUrl={}'.format(apiUrl, baseUrl));
     handleResponse(response);
     console.log('[-] Added to the crawl queue: {}'.format(baseUrl));
@@ -296,7 +293,6 @@ function crawlStatus(apiUrl) {
 }
 
 function scan(apiUrl, baseUrl) {
-    //console.log('Adding to the crawl queue: {}'.format(baseUrl));
     let response = request('POST', '{}/burp/scanner/scans/active?baseUrl={}'.format(apiUrl, baseUrl));
     handleResponse(response);
     console.log('[-] Added to the scan queue: {}'.format(baseUrl));

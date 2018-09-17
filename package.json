@@ -6,10 +6,10 @@
   "author": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/..."
+    "url": "https://github.com/Crimdrac/burp-control"
   },
   "bugs": {
-    "url": "https://github.com/..../issues"
+    "url": "https://github.com/Crimdrac/burp-control/issues"
   },
   "bin": {
     "burpctl": "src/burpctl.js"
@@ -26,6 +26,7 @@
     "request": "^2.88.0",
     "string-format": "^2.0.0",
     "sync-request": "^6.0.0",
-    "tmp": "0.0.33"
+    "tmp": "0.0.33",
+    "xsltproc": "0.0.4"
   }
 }
