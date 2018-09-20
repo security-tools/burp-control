@@ -38,17 +38,17 @@ program
 
 program
     .command('start [config]')
-    .description('Stopping Burp using the specified configuration file')
+    .description('Stopping Burp Suite using the specified configuration file')
     .action((config) => startAction(config));
 
 program
     .command('stop [config]')
-    .description('Stopping Burp using the specified configuration file')
+    .description('Stopping Burp Suite using the specified configuration file')
     .action((config) => stopAction(config));
 
 program
     .command('status [config]')
-    .description('Return the Burp status using the specified configuration file')
+    .description('Return the Burp Suite status using the specified configuration file')
     .action((config) => statusAction(config));
 
 program.on('command:*', function () {
@@ -105,6 +105,10 @@ function startAction(configfile) {
             detached: true,
             stdio: ['ignore', fs.openSync('stdout.log', 'w'), fs.openSync('errout.log', 'w')]
         });
+        if (prc.pid === undefined) {
+            throw new Error('Error spawning process');
+        }
+
         console.log("[-] Burp Suite pid: {}".format(prc.pid));
         prc.unref();
         waitUntilBurpIsReady(config.api_url);
