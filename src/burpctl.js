@@ -69,7 +69,7 @@ function printIntro() {
                 figlet.textSync('BurpControl', { font: 'ogre'})
         )
     );
-    console.log('Burp Controller {}'.format(getVersion()));
+    console.log('BurpControl {}'.format(getVersion()));
     console.log('');
 
 }
