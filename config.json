@@ -1,5 +1,9 @@
 {
   "burp_lib": "/Users/had/Projects/Private/tools/scanners/burp-1.x/burp-rest-api-1.0.3.jar",
+  "burp_options": [
+    "-Xmx1024M",
+    "--headless.mode=true"
+  ],
   "proxy_url": "localhost:8888",
   "api_url": "http://localhost:8090",
   "report_type": "HTLM",
@@ -11,7 +15,11 @@
     "https://crimdrac-jhipster-5-demo.herokuapp.com/api"
   ],
   "targetScope": {
-    "include": [ "https://crimdrac-jhipster-5-demo.herokuapp.com" ],
-    "exclude": [ "http://ignore.com" ]
+    "include": [
+      "https://crimdrac-jhipster-5-demo.herokuapp.com"
+    ],
+    "exclude": [
+      "http://ignore.com"
+    ]
   }
 }

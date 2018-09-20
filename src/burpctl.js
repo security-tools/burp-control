@@ -95,7 +95,12 @@ function startAction(configfile) {
         let config = loadConfiguration(configfile || default_configfile);
         console.log('[+] Starting Burp Suite ...');
 
-        let prc = spawn('java',  ['-jar', config.burp_lib, '-Xmx1024M', '--headless.mode=true'], {
+        let options = ['-jar', config.burp_lib];
+        if (config.burp_options) {
+            options = options.concat(config.burp_options);
+        }
+
+        let prc = spawn('java',  options, {
             shell: true,
             detached: true,
             stdio: ['ignore', fs.openSync('stdout.log', 'w'), fs.openSync('errout.log', 'w')]
