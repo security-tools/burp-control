@@ -348,10 +348,6 @@ function handleResponse(response) {
     }
 }
 
-function sleep(ms) {
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-}
-
 function getVersion() {
     let packagefile = path.resolve(__dirname + "/../package.json");
     try {
@@ -361,4 +357,11 @@ function getVersion() {
         return 'unknown';
     }
 
+}
+
+/* global Atomics */
+/* global SharedArrayBuffer */
+
+function sleep(ms) {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
