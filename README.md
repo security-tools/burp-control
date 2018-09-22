@@ -7,9 +7,9 @@ BurpControl is a tool for automating security vulnerability scans with [Burp Sui
 
 BurpControl, in conjunction with Burp Suite Professional, provides the following features:
 
-* Run a Burp site crawl scan in headless or GUI mode
+* Run a Burp site crawl in headless or GUI mode
 * Run a Burp vulnerability scan in headless or GUI mode
-* Configure in and out-of-scope URL(s) for Burp's 
+* Configure in and out-of-scope URL(s) for Burp's crawler and scanner
 * Use externals UI or API tests to extend Burp's target sitemap
 * Generate a scan report in HTML/XML format.
 * Shut down Burp
@@ -37,6 +37,8 @@ On Windows/Linux:
 java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
 --config-file=burp-default-project-options.json --user-config-file=burp-user-options.json
 ```
+
+BurpControl can also start up Burp in the background with the command 'burpctl start'.
 
 ### BurpControl Configuration
 
@@ -76,7 +78,7 @@ java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
   Commands:
 
     crawl [config]             Crawl using the specified config file
-    scan [config]              Scan using the specified config file
+    scan [options] [config]    Scan using the specified config file
     report [options] [config]  Generate a report using the specified config file
     start [config]             Start Burp Suite using the specified config file
     stop [config]              Stop Burp Suite using the specified config file
@@ -86,7 +88,7 @@ java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
 
 ### Typical workflow
 
-1. Create a config.json file containing the URL(s) of the target application.
+1. Create a BurpControl config.json file containing the URL(s) of the target application.
 
 2. Start up Burp with the API Extension
     ```sh

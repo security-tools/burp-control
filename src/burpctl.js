@@ -96,6 +96,10 @@ function startAction(configfile) {
         let config = loadConfiguration(configfile || default_configfile);
         console.log('[+] Starting Burp Suite ...');
 
+        if (!fs.existsSync(config.burp_lib)) {
+            throw new Error('Unable to locate Burp library {}'.format(config.burp_lib));
+        }
+
         let options = ['-jar', config.burp_lib];
         if (config.burp_options) {
             options = options.concat(config.burp_options);
