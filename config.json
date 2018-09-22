@@ -9,10 +9,9 @@
   "report_type": "HTLM",
   "crawl_targets": [
     "https://crimdrac-jhipster-5-demo.herokuapp.com",
-    "https://crimdrac-jhipster-5-demo.herokuapp.com/#/docs"
   ],
   "scan_targets": [
-    "https://crimdrac-jhipster-5-demo.herokuapp.com/api"
+    "https://crimdrac-jhipster-5-demo.herokuapp.com"
   ],
   "targetScope": {
     "include": [
