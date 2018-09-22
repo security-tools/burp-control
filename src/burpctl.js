@@ -21,34 +21,34 @@ program
 
 program
     .command('crawl [config]')
-    .description('Crawl using the specified configuration file')
+    .description('Crawl using the specified config file')
     .action((config) => crawlAction(config));
 
 program
     .command('scan [config]')
-    .description('Scan using the specified configuration file')
+    .description('Scan using the specified config file')
     .action((config) => scanAction(config));
 
 program
     .command('report [config]')
-    .description('Generate a report using the specified configuration file')
+    .description('Generate a report using the specified config file')
     .option('-f, --file <file>', 'Report file')
     .option('-t, --type <type>', 'Report type', /^(html|xml)$/i, 'html')
     .action((config, options) => reportAction(config, options));
 
 program
     .command('start [config]')
-    .description('Stopping Burp Suite using the specified configuration file')
+    .description('Start Burp Suite using the specified config file')
     .action((config) => startAction(config));
 
 program
     .command('stop [config]')
-    .description('Stopping Burp Suite using the specified configuration file')
+    .description('Stop Burp Suite using the specified config file')
     .action((config) => stopAction(config));
 
 program
     .command('status [config]')
-    .description('Return the Burp Suite status using the specified configuration file')
+    .description('Return the Burp Suite status using the specified config file')
     .action((config) => statusAction(config));
 
 program.on('command:*', function () {

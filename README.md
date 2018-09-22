@@ -43,12 +43,15 @@ java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
 ```json
 {
   "burp_lib": "burp-rest-api-1.0.3.jar",
-  "proxy_url": "localhost:8888",
+  "burp_options": [
+    "-Xmx1024M",
+    "--headless.mode=true"
+  ],
+  "proxy_url": "localhost:8080",
   "api_url": "http://localhost:8090",
   "report_type": "HTLM",
   "crawl_targets": [
-    "https://targetapp.herokuapp.com",
-    "https://targetapp.herokuapp.com/#/docs"
+    "https://targetapp.herokuapp.com" 
   ],
   "scan_targets": [
     "https://targetapp.herokuapp.com/api"
@@ -72,12 +75,12 @@ java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
 
   Commands:
 
-    crawl [config]             Crawl using the specified configuration file
-    scan [config]              Scan using the specified configuration file
-    report [options] [config]  Generate a report using the specified configuration file
-    start [config]             Stopping Burp using the specified configuration file
-    stop [config]              Stopping Burp using the specified configuration file
-    status [config]            Return the Burp status using the specified configuration file
+    crawl [config]             Crawl using the specified config file
+    scan [config]              Scan using the specified config file
+    report [options] [config]  Generate a report using the specified config file
+    start [config]             Start Burp Suite using the specified config file
+    stop [config]              Stop Burp Suite using the specified config file
+    status [config]            Return the Burp Suite status using the specified config file
 
 ```
 
