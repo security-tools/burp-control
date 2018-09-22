@@ -27,7 +27,8 @@ program
 program
     .command('scan [config]')
     .description('Scan using the specified config file')
-    .action((config) => scanAction(config));
+    .option('-m, --mode <mode>', 'Scan mode', /^(active|passive)$/i, 'active')
+    .action((config, options) => scanAction(config, options));
 
 program
     .command('report [config]')
@@ -122,6 +123,7 @@ function startAction(configfile) {
 }
 
 function reportAction(configfile, options) {
+
     try {
         printIntro();
         getReport(loadConfiguration(configfile || default_configfile).api_url, options.file, options.type);
@@ -132,14 +134,14 @@ function reportAction(configfile, options) {
     }
 }
 
-function scanAction(configfile) {
+function scanAction(configfile, options) {
     try {
         let config = loadConfiguration(configfile || default_configfile);
         updateScope(config.api_url, config.targetScope);
-        console.log('[+] Active scan started ...');
+        console.log('[+] Scan in {} mode started ...'.format(options.mode));
 
         config.scan_targets.forEach(function(entry) {
-            scan(config.api_url, entry);
+            scan(config.api_url, options.mode, entry);
         });
 
         pollScanStatus(config.api_url);
@@ -301,8 +303,8 @@ function crawlStatus(apiUrl) {
     return JSON.parse(response.getBody('utf8')).spiderPercentage;
 }
 
-function scan(apiUrl, baseUrl) {
-    let response = request('POST', '{}/burp/scanner/scans/active?baseUrl={}'.format(apiUrl, baseUrl));
+function scan(apiUrl, mode, baseUrl) {
+    let response = request('POST', '{}/burp/scanner/scans/{}?baseUrl={}'.format(apiUrl, mode, baseUrl));
     handleResponse(response);
     console.log('[-] Added to the scan queue: {}'.format(baseUrl));
 }
