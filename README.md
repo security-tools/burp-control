@@ -112,6 +112,10 @@ BurpControl can also start up Burp in the background with the command 'burpctl s
     burpctl report
     ```
 
+7. Shut down Burp Suite
+    ```sh
+    burpctl stop
+    ```
 
 [Burp Suite Professional]: https://portswigger.net/burp
 [Burp REST API Extension]: https://github.com/vmware/burp-rest-api
