@@ -8,17 +8,18 @@
   "api_url": "http://localhost:8090",
   "report_type": "HTLM",
   "crawl_targets": [
-    "https://crimdrac-jhipster-5-demo.herokuapp.com"
+    "https://google-gruyere.appspot.com/536011120536705121801774396937534161432/"
   ],
   "scan_targets": [
-    "https://crimdrac-jhipster-5-demo.herokuapp.com"
+    "https://google-gruyere.appspot.com/536011120536705121801774396937534161432/"
   ],
   "targetScope": {
     "include": [
-      "https://crimdrac-jhipster-5-demo.herokuapp.com"
+      "https://google-gruyere.appspot.com/536011120536705121801774396937534161432/"
     ],
     "exclude": [
-      "http://ignore.com"
+      "http://news.google.com",
+      "http://images.google.com"
     ]
   }
 }
