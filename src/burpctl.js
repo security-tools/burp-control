@@ -12,7 +12,7 @@ const request = require('sync-request');
 const spawn = require('child_process').spawn;
 
 const default_configfile = 'config.json';
-const max_startup_time = 20;
+const max_startup_time = 60;
 
 format.extend(String.prototype, {});
 
