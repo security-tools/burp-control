@@ -75,7 +75,7 @@ function printIntro() {
 
 }
 
-function stopAction(configfile) {
+async function stopAction(configfile) {
     try {
         printIntro();
         let config = loadConfiguration(configfile || default_configfile);
@@ -90,7 +90,7 @@ function stopAction(configfile) {
     }
 }
 
-function startAction(configfile) {
+async function startAction(configfile) {
     try {
         printIntro();
         let config = loadConfiguration(configfile || default_configfile);
@@ -116,7 +116,7 @@ function startAction(configfile) {
 
         console.log("[-] Burp Suite pid: {}".format(prc.pid));
         prc.unref();
-        waitUntilBurpIsReady(config.api_url);
+        await waitUntilBurpIsReady(config.api_url);
         console.log('[-] Burp Suite is started');
         updateScope(config.api_url, config.targetScope);
     }
@@ -126,7 +126,7 @@ function startAction(configfile) {
     }
 }
 
-function reportAction(configfile, options) {
+async function reportAction(configfile, options) {
 
     try {
         printIntro();
@@ -138,8 +138,9 @@ function reportAction(configfile, options) {
     }
 }
 
-function scanAction(configfile, options) {
+async function scanAction(configfile, options) {
     try {
+        printIntro();
         let config = loadConfiguration(configfile || default_configfile);
         updateScope(config.api_url, config.targetScope);
         console.log('[+] Scan in {} mode started ...'.format(options.mode));
@@ -148,7 +149,7 @@ function scanAction(configfile, options) {
             scan(config.api_url, options.mode, entry);
         });
 
-        pollScanStatus(config.api_url);
+        await pollScanStatus(config.api_url);
         console.log('[+] Scan completed');
         console.log('[+] Scan issues:');
 
@@ -167,7 +168,7 @@ function scanAction(configfile, options) {
     }
 }
 
-function crawlAction(configfile) {
+async function crawlAction(configfile) {
     try {
         printIntro();
         let config = loadConfiguration(configfile || default_configfile);
@@ -177,7 +178,7 @@ function crawlAction(configfile) {
             crawl(config.api_url, entry);
         });
 
-        pollCrawlStatus(config.api_url);
+        await pollCrawlStatus(config.api_url);
         console.log('[+] Crawl completed');
     }
     catch(e) {
@@ -186,12 +187,12 @@ function crawlAction(configfile) {
     }
 }
 
-function statusAction(configfile) {
+async function statusAction(configfile) {
     try {
         printIntro();
         let config = loadConfiguration(configfile || default_configfile);
         console.log('[+] Retrieving status ...');
-        let burpVersion = getBurpVersion(config.api_url);
+        let burpVersion = await getBurpVersion(config.api_url);
         console.log('[-] {} is running'.format(burpVersion));
         console.log('[+] Retrieving status completed');
     }
@@ -223,12 +224,12 @@ function getReport(apiUrl, reportfile, reporttype) {
     });
 }
 
-function waitUntilBurpIsReady(apiUrl) {
+async function waitUntilBurpIsReady(apiUrl) {
     let elapsedSeconds = 0;
     process.stdout.write('[-] Waiting for Burp Suite...');
     let burpVersion;
     do {
-        sleep(1000);
+        await sleep(1000);
         elapsedSeconds += 1;
         try {
             burpVersion = getBurpVersion(apiUrl);
@@ -249,10 +250,10 @@ function waitUntilBurpIsReady(apiUrl) {
     }
 }
 
-function pollCrawlStatus(apiUrl) {
+async function pollCrawlStatus(apiUrl) {
     let status = 0;
     do {
-        sleep(1000);
+        await sleep(1000);
         status = crawlStatus(apiUrl);
         process.stdout.write('\r[-] Crawl in progress: {}%'.format(status));
 
@@ -260,10 +261,10 @@ function pollCrawlStatus(apiUrl) {
     console.log();
 }
 
-function pollScanStatus(apiUrl) {
+async function pollScanStatus(apiUrl) {
     let status = 0;
     do {
-        sleep(1000);
+        await sleep(1000);
         status = scanStatus(apiUrl);
         process.stdout.write('\r[-] Scan in progress: {}%'.format(status));
 
@@ -365,9 +366,8 @@ function getVersion() {
 
 }
 
-/* global Atomics */
-/* global SharedArrayBuffer */
-
-function sleep(ms) {
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+function sleep(ms){
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
 }
