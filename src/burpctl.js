@@ -75,7 +75,7 @@ function printIntro() {
 
 }
 
-async function stopAction(configfile) {
+function stopAction(configfile) {
     try {
         printIntro();
         let config = loadConfiguration(configfile || default_configfile);
@@ -118,6 +118,7 @@ async function startAction(configfile) {
         prc.unref();
         await waitUntilBurpIsReady(config.api_url);
         console.log('[-] Burp Suite is started');
+        console.log('[-] Swagger UI: {}/swagger-ui.html#/'.format(config.api_url));
         updateScope(config.api_url, config.targetScope);
     }
     catch(e) {
@@ -126,7 +127,7 @@ async function startAction(configfile) {
     }
 }
 
-async function reportAction(configfile, options) {
+function reportAction(configfile, options) {
 
     try {
         printIntro();
@@ -229,7 +230,7 @@ async function waitUntilBurpIsReady(apiUrl) {
     process.stdout.write('[-] Waiting for Burp Suite...');
     let burpVersion;
     do {
-        await sleep(1000);
+        await sleep(1000); // eslint-disable-line no-await-in-loop
         elapsedSeconds += 1;
         try {
             burpVersion = getBurpVersion(apiUrl);
@@ -253,7 +254,7 @@ async function waitUntilBurpIsReady(apiUrl) {
 async function pollCrawlStatus(apiUrl) {
     let status = 0;
     do {
-        await sleep(1000);
+        await sleep(1000); // eslint-disable-line no-await-in-loop
         status = crawlStatus(apiUrl);
         process.stdout.write('\r[-] Crawl in progress: {}%'.format(status));
 
@@ -264,14 +265,13 @@ async function pollCrawlStatus(apiUrl) {
 async function pollScanStatus(apiUrl) {
     let status = 0;
     do {
-        await sleep(1000);
+        await sleep(1000); // eslint-disable-line no-await-in-loop
         status = scanStatus(apiUrl);
         process.stdout.write('\r[-] Scan in progress: {}%'.format(status));
 
     } while (status != 100);
     console.log();
 }
-
 
 function updateScope(apiUrl, scope) {
     console.log('[+] Updating the scope ...');
@@ -363,11 +363,10 @@ function getVersion() {
     } catch(e) {
         return 'unknown';
     }
-
 }
 
-function sleep(ms){
-    return new Promise(resolve => {
-        setTimeout(resolve, ms)
-    })
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
 }
