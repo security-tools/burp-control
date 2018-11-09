@@ -1,6 +1,6 @@
 {
   "name": "burp-control",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "A command-line interface for controlling burp suite",
   "main": "src/burpctl.js",
   "author": "Donat Hauser",
