@@ -106,7 +106,7 @@ async function startAction(configfile) {
         }
 
         let prc = spawn('java',  options, {
-            shell: true,
+            shell: false,
             detached: true,
             stdio: ['ignore', fs.openSync('stdout.log', 'w'), fs.openSync('errout.log', 'w')]
         });
