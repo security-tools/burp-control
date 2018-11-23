@@ -214,7 +214,7 @@ function getReport(apiUrl, reportfile, reporttype) {
     handleResponse(response);
     console.log('[+] Downloading HTML/XML report');
     let filename = reportfile || path.join(tmp.dirSync().name, 'burp-report-{}.{}'.format(
-        new Date().toISOString(),
+        new Date().toISOString().replace(/:/g, ''),
         reporttype));
 
     fs.writeFile(filename, response.body, function(err) {
