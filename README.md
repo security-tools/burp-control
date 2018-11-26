@@ -25,7 +25,7 @@ BurpControl, in conjunction with Burp Suite Professional, provides the following
   
 ## Setup
 
-1. Setup Burp Professional and configure a valid license
+1. Setup Burp Professional 1.x and configure a valid license
 2. Build and install [Burp REST API Extension]
 3. Create a configuration (JSON) for the target application.
 
@@ -35,6 +35,7 @@ On Windows/Linux:
 
 ```sh
 java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
+--burp.jar=burpsuite_pro_v1.7.37.jar \
 --config-file=burp-default-project-options.json --user-config-file=burp-user-options.json
 ```
 
@@ -44,10 +45,11 @@ BurpControl can also start up Burp in the background with the command 'burpctl s
 
 ```json
 {
-  "burp_lib": "burp-rest-api-1.0.3.jar",
+  "burp_lib": "burp-rest-api-2.0.1.jar",
   "burp_options": [
     "-Xmx1024M",
-    "--headless.mode=true"
+    "--headless.mode=true",
+    "--burp.jar=burpsuite_pro_v1.7.37.jar"
   ],
   "proxy_url": "localhost:8080",
   "api_url": "http://localhost:8090",
@@ -80,6 +82,7 @@ BurpControl can also start up Burp in the background with the command 'burpctl s
     crawl [config]             Crawl using the specified config file
     scan [options] [config]    Scan using the specified config file
     report [options] [config]  Generate a report using the specified config file
+    junit [options] [config]   Generate a junit using the specified config file  
     start [config]             Start Burp Suite using the specified config file
     stop [config]              Stop Burp Suite using the specified config file
     status [config]            Return the Burp Suite status using the specified config file
@@ -111,8 +114,13 @@ BurpControl can also start up Burp in the background with the command 'burpctl s
     ```sh
     burpctl report
     ```
+    
+7. Generate a junit report with
+    ```sh
+    burpctl junit
+    ```
 
-7. Shut down Burp Suite
+8. Shut down Burp Suite
     ```sh
     burpctl stop
     ```
