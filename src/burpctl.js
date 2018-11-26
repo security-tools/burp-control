@@ -10,6 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const request = require('sync-request');
 const spawn = require('child_process').spawn;
+const junit = require('./junit-report.js');
 
 const default_configfile = 'config.json';
 const max_startup_time = 60;
@@ -36,6 +37,13 @@ program
     .option('-f, --file <file>', 'Report file')
     .option('-t, --type <type>', 'Report type', /^(html|xml)$/i, 'html')
     .action((config, options) => reportAction(config, options));
+
+program
+    .command('junit [config]')
+    .description('Generate a junit using the specified config file')
+    .option('-f, --file <file>', 'Report file')
+    .option('-t, --threshold <threshold>', 'Severity threshold', /^(Information|Low|Medium|High)$/i, 'High')
+    .action((config, options) => junitAction(config, options));
 
 program
     .command('start [config]')
@@ -72,7 +80,6 @@ function printIntro() {
     );
     console.log('BurpControl {}'.format(getVersion()));
     console.log('');
-
 }
 
 function stopAction(configfile) {
@@ -132,6 +139,18 @@ function reportAction(configfile, options) {
     try {
         printIntro();
         getReport(loadConfiguration(configfile || default_configfile).api_url, options.file, options.type);
+    }
+    catch(e) {
+        console.log('Report download failed: {}'.format(e.message));
+        process.exit(1);
+    }
+}
+
+function junitAction(configfile, options) {
+
+    try {
+        printIntro();
+        createJunitReport(loadConfiguration(configfile || default_configfile).api_url, options.file, options.threshold);
     }
     catch(e) {
         console.log('Report download failed: {}'.format(e.message));
@@ -214,15 +233,31 @@ function getReport(apiUrl, reportfile, reporttype) {
     handleResponse(response);
     console.log('[+] Downloading HTML/XML report');
     let filename = reportfile || path.join(tmp.dirSync().name, 'burp-report-{}.{}'.format(
-        new Date().toISOString().replace(/:/g, ''),
+        new Date().toISOString()
+            .replace(/:/g, ''),
         reporttype));
 
-    fs.writeFile(filename, response.body, function(err) {
-        if (err) {
-            throw err;
-        }
-        console.log('[-] Scan report saved to {}'.format(filename));
-    });
+    fs.writeFileSync(filename, response.body);
+    console.log('[-] Scan report saved to {}'.format(filename));
+    return filename;
+}
+
+function createJunitReport(apiUrl, junitReportfile, threshold) {
+    let reportfile = getReport(apiUrl, undefined, 'xml');
+
+    console.log('[+] Generating JUnit report from scan report with threshold {}'.format(threshold));
+
+    let filename = junitReportfile || path.join(tmp.dirSync().name, 'junit-report-{}.xml'.format(
+        new Date().toISOString()
+            .replace(/:/g, '')));
+
+    junit.createJunitReport(reportfile, filename, threshold);
+    console.log('[-] JUnit report saved to {}'.format(filename));
+
+    fs.unlinkSync(reportfile);
+    console.log('[-] Scan report {} deleted'.format(reportfile));
+
+
 }
 
 async function waitUntilBurpIsReady(apiUrl) {
