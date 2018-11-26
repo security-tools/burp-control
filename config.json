@@ -1,5 +1,5 @@
 {
-  "burp_lib": "/Users/had/Projects/Private/tools/scanners/burp-1.x/burp-rest-api-1.0.3.jar",
+  "burp_lib": "burp-rest-api-1.0.3.jar",
   "burp_options": [
     "-Xmx1024M",
     "--headless.mode=true"
