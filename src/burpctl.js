@@ -103,6 +103,10 @@ async function startAction(configfile) {
         let config = loadConfiguration(configfile || default_configfile);
         console.log('[+] Starting Burp Suite ...');
 
+        if (isBurpApiAvailable(config.api_url)) {
+            throw new Error('Burp Suite is already running');
+        }
+
         if (!fs.existsSync(config.burp_lib)) {
             throw new Error('Unable to locate Burp library {}'.format(config.burp_lib));
         }
@@ -123,7 +127,7 @@ async function startAction(configfile) {
 
         console.log("[-] Burp Suite pid: {}".format(prc.pid));
         prc.unref();
-        await waitUntilBurpIsReady(config.api_url);
+        await waitUntilBurpApiIsReady(config.api_url);
         console.log('[-] Burp Suite is started');
         console.log('[-] Swagger UI: {}/swagger-ui.html#/'.format(config.api_url));
         updateScope(config.api_url, config.targetScope);
@@ -222,6 +226,17 @@ async function statusAction(configfile) {
     }
 }
 
+function isBurpApiAvailable(apiUrl) {
+    try {
+        let response = request('GET', '{}/burp/versions'.format(apiUrl));
+        handleResponse(response);
+        return JSON.parse(response.getBody('utf8')).burpVersion !== undefined;
+    }
+    catch(e) {
+        return false;
+    }
+}
+
 function getBurpVersion(apiUrl) {
     let response = request('GET', '{}/burp/versions'.format(apiUrl));
     handleResponse(response);
@@ -260,7 +275,7 @@ function createJunitReport(apiUrl, junitReportfile, threshold) {
 
 }
 
-async function waitUntilBurpIsReady(apiUrl) {
+async function waitUntilBurpApiIsReady(apiUrl) {
     let elapsedSeconds = 0;
     process.stdout.write('[-] Waiting for Burp Suite...');
     let burpVersion;
