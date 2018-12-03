@@ -12,6 +12,7 @@ BurpControl, in conjunction with Burp Suite Professional, provides the following
 * Configure in and out-of-scope URL(s) for Burp's crawler and scanner
 * Use externals UI or API tests to extend Burp's target sitemap
 * Generate a scan report in HTML/XML format.
+* Generate a JUnit report that breaks the build in case a vulnerability is discovered
 * Shut down Burp
 
 ## Prerequisites
