@@ -83,7 +83,7 @@ BurpControl can also start up Burp in the background with the command 'burpctl s
     crawl [config]             Crawl using the specified config file
     scan [options] [config]    Scan using the specified config file
     report [options] [config]  Generate a report using the specified config file
-    junit [options] [config]   Generate a junit using the specified config file  
+    junit [options] [config]   Generate a junit report using the specified config file  
     start [config]             Start Burp Suite using the specified config file
     stop [config]              Stop Burp Suite using the specified config file
     status [config]            Return the Burp Suite status using the specified config file

@@ -40,7 +40,7 @@ program
 
 program
     .command('junit [config]')
-    .description('Generate a junit using the specified config file')
+    .description('Generate a junit report using the specified config file')
     .option('-f, --file <file>', 'Report file')
     .option('-t, --threshold <threshold>', 'Severity threshold', /^(Information|Low|Medium|High)$/i, 'High')
     .action((config, options) => junitAction(config, options));
