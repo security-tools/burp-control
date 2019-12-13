@@ -18,7 +18,7 @@ const max_startup_time = 60;
 format.extend(String.prototype, {});
 
 program
-    .version(getVersion());
+    .version(version());
 
 program
     .command('crawl [config]')
@@ -78,7 +78,7 @@ function printIntro() {
                 figlet.textSync('BurpControl', { font: 'ogre'})
         )
     );
-    console.log('BurpControl {}'.format(getVersion()));
+    console.log('BurpControl {}'.format(version()));
     console.log('');
 }
 
@@ -107,11 +107,15 @@ async function startAction(configfile) {
             throw new Error('Burp Suite is already running');
         }
 
-        if (!fs.existsSync(config.burp_lib)) {
-            throw new Error('Unable to locate Burp library {}'.format(config.burp_lib));
+        if (!fs.existsSync(config.burp_api_jar)) {
+            throw new Error('Unable to locate Burp API jar: {}'.format(config.burp_api_jar));
         }
 
-        let options = ['-jar', config.burp_lib];
+        if (!fs.existsSync(config.burp_jar)) {
+            throw new Error('Unable to locate Burp jar: {}'.format(config.burp_jar));
+        }
+
+        let options = ['-jar', config.burp_api_jar, '--burp.jar=' + config.burp_jar];
         if (config.burp_options) {
             options = options.concat(config.burp_options);
         }
@@ -405,7 +409,7 @@ function handleResponse(response) {
     }
 }
 
-function getVersion() {
+function version() {
     let packagefile = path.resolve(__dirname + "/../package.json");
     try {
         let packageconfig = fs.readFileSync(packagefile);

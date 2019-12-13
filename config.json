@@ -1,9 +1,9 @@
 {
-  "burp_lib": "/Users/had/Projects/Private/tools/scanners/burp-1.x/burp-rest-api-2.0.1.jar",
+  "burp_api_jar": "/Users/had/Projects/burp-suite/lib/burp-rest-api-2.0.1.jar",
+  "burp_jar": "/Users/had/Projects/burp-suite/lib//burpsuite_pro_v1.7.37.jar",
   "burp_options": [
     "-Xmx1024M",
-    "--headless.mode=true",
-    "--burp.jar=/Users/had/Projects/Private/tools/scanners/burp-1.x/burpsuite_pro_v1.7.37.jar"
+    "--headless.mode=true"
   ],
   "proxy_url": "localhost:8888",
   "api_url": "http://localhost:8090",
