@@ -2,9 +2,9 @@
   "burpJar": "/Users/had/Projects/burp-suite/lib//burpsuite_pro_v1.7.37.jar",
   "burpApiJar": "/Users/had/Projects/burp-suite/lib/burp-rest-api-2.0.1.jar",
   "burpOptions": [
-    "-Xmx1024M",
-    "--headless.mode=true"
+    "-Xmx1024M"
   ],
+  "headless": true,
   "proxyUrl": "localhost:8888",
   "apiUrl": "http://localhost:8090",
   "reportType": "HTLM",

@@ -116,7 +116,7 @@ async function startAction(configfile) {
             throw new Error('Unable to locate Burp jar: {}'.format(config.burpJar));
         }
 
-        let options = ['-jar', config.burpApiJar, '--burp.jar=' + config.burpJar];
+        let options = ['-jar', config.burpApiJar, '--burp.jar=' + config.burpJar, '--headless.mode=' + config.headless];
         if (config.burpOptions) {
             options = options.concat(config.burpOptions);
         }
@@ -403,11 +403,12 @@ function loadConfiguration(filename) {
 function supplementDefaultConfig(config) {
     if (!config.hasOwnProperty('burpApiJar')) {
         config.burpApiJar = burplocator.burpApiJar();
-        console.log("Using Burp API located at: {}".format(burplocator.burpApiJar));
     }
     if (!config.hasOwnProperty('burpJar')) {
         config.burpJar = burplocator.burpJar();
-        console.log("Using Burp located at: {}".format(burplocator.burpJar));
+    }
+    if (!config.hasOwnProperty('headless')) {
+        config.headless = true;
     }
     return config;
 }
