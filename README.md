@@ -23,6 +23,8 @@ BurpControl, in conjunction with Burp Suite Professional, provides the following
   A Burp extensions that adds a REST API to Burp.
 * [Node.js]
   Javascript runtime for BurpControl.
+* Java JRE 6,7, or 8 (a higher Java version is currently not supported)  
+  
   
 ## Setup
 
@@ -46,19 +48,19 @@ BurpControl can also start up Burp in the background with the command 'burpctl s
 
 ```json
 {
-  "burp_lib": "burp-rest-api-2.0.1.jar",
-  "burp_options": [
+  "burpApiJar": "burp-rest-api-2.0.1.jar",
+  "burpJar": "burpsuite_pro_v1.7.37.jar",
+  "burpOptions": [
     "-Xmx1024M",
-    "--headless.mode=true",
-    "--burp.jar=burpsuite_pro_v1.7.37.jar"
+    "--headless.mode=true"
   ],
-  "proxy_url": "localhost:8080",
-  "api_url": "http://localhost:8090",
-  "report_type": "HTLM",
-  "crawl_targets": [
+  "proxyUrl": "localhost:8080",
+  "apiUrl": "http://localhost:8090",
+  "reportType": "HTLM",
+  "crawlTargets": [
     "https://targetapp.herokuapp.com" 
   ],
-  "scan_targets": [
+  "scanTargets": [
     "https://targetapp.herokuapp.com/api"
   ],
   "targetScope": {
