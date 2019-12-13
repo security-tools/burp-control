@@ -1,11 +1,11 @@
 {
-  "proxy_url": "localhost:8888",
-  "api_url": "http://localhost:8090",
-  "report_type": "HTLM",
-  "crawl_targets": [
+  "proxyUrl": "localhost:8888",
+  "apiUrl": "http://localhost:8090",
+  "reportType": "HTLM",
+  "crawlTargets": [
     "http://google-gruyere.appspot.com"
   ],
-  "scan_targets": [
+  "scanTargets": [
     "http://google-gruyere.appspot.com"
   ],
   "targetScope": {

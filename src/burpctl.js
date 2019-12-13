@@ -11,9 +11,10 @@ const path = require('path');
 const request = require('sync-request');
 const spawn = require('child_process').spawn;
 const junit = require('./junit-report.js');
+const burplocator = require('./burp-locator.js');
 
-const default_configfile = 'config.json';
-const max_startup_time = 60;
+const defaultConfigfile = 'config.json';
+const maxStartupTime = 60;
 
 format.extend(String.prototype, {});
 
@@ -85,9 +86,9 @@ function printIntro() {
 function stopAction(configfile) {
     try {
         printIntro();
-        let config = loadConfiguration(configfile || default_configfile);
+        let config = loadConfiguration(configfile || defaultConfigfile);
         console.log('[+] Shutting down Burp Suite ...');
-        let response = request('GET', '{}/burp/stop'.format(config.api_url));
+        let response = request('GET', '{}/burp/stop'.format(config.apiUrl));
         handleResponse(response);
         console.log('[-] Burp Suite is stopped');
     }
@@ -100,24 +101,24 @@ function stopAction(configfile) {
 async function startAction(configfile) {
     try {
         printIntro();
-        let config = loadConfiguration(configfile || default_configfile);
+        let config = loadConfiguration(configfile || defaultConfigfile);
         console.log('[+] Starting Burp Suite ...');
 
-        if (isBurpApiAvailable(config.api_url)) {
+        if (isBurpApiAvailable(config.apiUrl)) {
             throw new Error('Burp Suite is already running');
         }
 
-        if (!fs.existsSync(config.burp_api_jar)) {
-            throw new Error('Unable to locate Burp API jar: {}'.format(config.burp_api_jar));
+        if (!fs.existsSync(config.burpApiJar)) {
+            throw new Error('Unable to locate Burp API jar: {}'.format(config.burpApiJar));
         }
 
-        if (!fs.existsSync(config.burp_jar)) {
-            throw new Error('Unable to locate Burp jar: {}'.format(config.burp_jar));
+        if (!fs.existsSync(config.burpJar)) {
+            throw new Error('Unable to locate Burp jar: {}'.format(config.burpJar));
         }
 
-        let options = ['-jar', config.burp_api_jar, '--burp.jar=' + config.burp_jar];
-        if (config.burp_options) {
-            options = options.concat(config.burp_options);
+        let options = ['-jar', config.burpApiJar, '--burp.jar=' + config.burpJar];
+        if (config.burpOptions) {
+            options = options.concat(config.burpOptions);
         }
 
         let prc = spawn('java',  options, {
@@ -131,10 +132,10 @@ async function startAction(configfile) {
 
         console.log("[-] Burp Suite pid: {}".format(prc.pid));
         prc.unref();
-        await waitUntilBurpApiIsReady(config.api_url);
+        await waitUntilBurpApiIsReady(config.apiUrl);
         console.log('[-] Burp Suite is started');
-        console.log('[-] Swagger UI: {}/swagger-ui.html#/'.format(config.api_url));
-        updateScope(config.api_url, config.targetScope);
+        console.log('[-] Swagger UI: {}/swagger-ui.html#/'.format(config.apiUrl));
+        updateScope(config.apiUrl, config.targetScope);
     }
     catch(e) {
         console.log('Start failed: {}'.format(e.message));
@@ -146,7 +147,7 @@ function reportAction(configfile, options) {
 
     try {
         printIntro();
-        getReport(loadConfiguration(configfile || default_configfile).api_url, options.file, options.type);
+        getReport(loadConfiguration(configfile || defaultConfigfile).apiUrl, options.file, options.type);
     }
     catch(e) {
         console.log('Report download failed: {}'.format(e.message));
@@ -158,7 +159,7 @@ function junitAction(configfile, options) {
 
     try {
         printIntro();
-        createJunitReport(loadConfiguration(configfile || default_configfile).api_url, options.file, options.threshold);
+        createJunitReport(loadConfiguration(configfile || defaultConfigfile).apiUrl, options.file, options.threshold);
     }
     catch(e) {
         console.log('Report download failed: {}'.format(e.message));
@@ -169,20 +170,20 @@ function junitAction(configfile, options) {
 async function scanAction(configfile, options) {
     try {
         printIntro();
-        let config = loadConfiguration(configfile || default_configfile);
-        updateScope(config.api_url, config.targetScope);
+        let config = loadConfiguration(configfile || defaultConfigfile);
+        updateScope(config.apiUrl, config.targetScope);
         console.log('[+] Scan in {} mode started ...'.format(options.mode));
 
-        config.scan_targets.forEach(function(entry) {
-            scan(config.api_url, options.mode, entry);
+        config.scanTargets.forEach(function(entry) {
+            scan(config.apiUrl, options.mode, entry);
         });
 
-        await pollScanStatus(config.api_url);
+        await pollScanStatus(config.apiUrl);
         console.log('[+] Scan completed');
         console.log('[+] Scan issues:');
 
         let issueNames = new Set();
-        getIssues(config.api_url).forEach(function(issue) {
+        getIssues(config.apiUrl).forEach(function(issue) {
             issueNames.add(issue.issueName);
         });
 
@@ -199,14 +200,14 @@ async function scanAction(configfile, options) {
 async function crawlAction(configfile) {
     try {
         printIntro();
-        let config = loadConfiguration(configfile || default_configfile);
-        updateScope(config.api_url, config.targetScope);
+        let config = loadConfiguration(configfile || defaultConfigfile);
+        updateScope(config.apiUrl, config.targetScope);
         console.log('[+] Crawl started ...');
-        config.crawl_targets.forEach(function (entry) {
-            crawl(config.api_url, entry);
+        config.crawlTargets.forEach(function (entry) {
+            crawl(config.apiUrl, entry);
         });
 
-        await pollCrawlStatus(config.api_url);
+        await pollCrawlStatus(config.apiUrl);
         console.log('[+] Crawl completed');
     }
     catch(e) {
@@ -218,9 +219,9 @@ async function crawlAction(configfile) {
 async function statusAction(configfile) {
     try {
         printIntro();
-        let config = loadConfiguration(configfile || default_configfile);
+        let config = loadConfiguration(configfile || defaultConfigfile);
         console.log('[+] Retrieving status ...');
-        let burpVersion = await getBurpVersion(config.api_url);
+        let burpVersion = await getBurpVersion(config.apiUrl);
         console.log('[-] {} is running'.format(burpVersion));
         console.log('[+] Retrieving status completed');
     }
@@ -292,7 +293,7 @@ async function waitUntilBurpApiIsReady(apiUrl) {
         } catch(e) {
             process.stdout.write('.');
         }
-    } while (elapsedSeconds < max_startup_time);
+    } while (elapsedSeconds < maxStartupTime);
     if (burpVersion) {
         process.stdout.write('success');
         console.log();
@@ -379,10 +380,9 @@ function getIssues(apiUrl) {
 }
 
 function loadConfiguration(filename) {
-
     let contents;
     try {
-        contents = fs.readFileSync(filename || default_configfile);
+        contents = fs.readFileSync(filename || defaultConfigfile);
     } catch(e) {
         if (e.code === 'ENOENT') {
             throw new Error('Configuration file {} not found'.format(filename));
@@ -392,11 +392,24 @@ function loadConfiguration(filename) {
     }
 
     try {
-        return JSON.parse(contents);
+        let config = JSON.parse(contents);
 
+        return  supplementDefaultConfig(config);
     } catch(e) {
         throw new Error('Unable to parse configuration {}'.format(filename));
     }
+}
+
+function supplementDefaultConfig(config) {
+    if (!config.hasOwnProperty('burpApiJar')) {
+        config.burpApiJar = burplocator.burpApiJar();
+        console.log("Using Burp API located at: {}".format(burplocator.burpApiJar));
+    }
+    if (!config.hasOwnProperty('burpJar')) {
+        config.burpJar = burplocator.burpJar();
+        console.log("Using Burp located at: {}".format(burplocator.burpJar));
+    }
+    return config;
 }
 
 function handleResponse(response) {

@@ -1,17 +1,17 @@
 {
-  "burp_api_jar": "/Users/had/Projects/burp-suite/lib/burp-rest-api-2.0.1.jar",
-  "burp_jar": "/Users/had/Projects/burp-suite/lib//burpsuite_pro_v1.7.37.jar",
-  "burp_options": [
+  "burpJar": "/Users/had/Projects/burp-suite/lib//burpsuite_pro_v1.7.37.jar",
+  "burpApiJar": "/Users/had/Projects/burp-suite/lib/burp-rest-api-2.0.1.jar",
+  "burpOptions": [
     "-Xmx1024M",
     "--headless.mode=true"
   ],
-  "proxy_url": "localhost:8888",
-  "api_url": "http://localhost:8090",
-  "report_type": "HTLM",
-  "crawl_targets": [
+  "proxyUrl": "localhost:8888",
+  "apiUrl": "http://localhost:8090",
+  "reportType": "HTLM",
+  "crawlTargets": [
     "https://google-gruyere.appspot.com/536011120536705121801774396937534161432/"
   ],
-  "scan_targets": [
+  "scanTargets": [
     "https://google-gruyere.appspot.com/536011120536705121801774396937534161432/"
   ],
   "targetScope": {
