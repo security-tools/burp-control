@@ -395,29 +395,37 @@ function loadConfiguration(filename) {
             throw e;
         }
     }
+    let config;
+    try {
+        config = JSON.parse(contents);
+    } catch(e) {
+        throw new Error('Unable to parse configuration {}. Cause: {}'.format(filename, e.message));
+    }
 
     try {
-        let config = JSON.parse(contents);
-
         return  supplementDefaultConfig(config);
     } catch(e) {
-        throw new Error('Unable to parse configuration {}'.format(filename));
+        throw new Error('Unable to apply default configuration {}. Cause: {}'.format(filename, e.message));
     }
 }
 
 function supplementDefaultConfig(config) {
-
+    console.log('[+] Loading default configuration properties');
     if (!Reflect.has(config, 'burpApiJar')) {
         config.burpApiJar = burplocator.burpApiJar();
+        console.log('[-] burpApiJar: {}'.format(JSON.stringify(config.burpApiJar)));
     }
     if (!Reflect.has(config, 'burpJar')) {
         config.burpJar = burplocator.burpJar();
+        console.log('[-] burpJar: {}'.format(JSON.stringify(config.burpJar)));
     }
     if (!Reflect.has(config, 'headless')) {
         config.headless = true;
+        console.log('[-] headless: {}'.format(JSON.stringify(config.headless)));
     }
     if (!Reflect.has(config, 'burpExtensions')) {
         config.burpExtensions = burplocator.burpExtensions();
+        console.log('[-] burpExtensions: {}'.format(JSON.stringify(config.burpExtensions)));
     }
 
     return config;

@@ -29,10 +29,7 @@ function packagePath() {
     try {
         return require.resolve('burp-suite/package.json');
     } catch (error) {
-        if (error.code != 'MODULE_NOT_FOUND') {
-            throw new Error('Unable to locate {}'.format('burp-suite/package.json'));
-        }
-        throw error;
+            throw new Error('Unable to locate optional package burp-suite');
     }
 }
 
