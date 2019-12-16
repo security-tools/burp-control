@@ -37,9 +37,12 @@ BurpControl, in conjunction with Burp Suite Professional, provides the following
 On Windows/Linux:
 
 ```sh
-java -jar -Xmx2G burp-rest-api-1.0.3.jar --headless.mode=false \
+java -jar -Xmx2G burp-rest-api-1.0.3.jar \
+--headless.mode=false \
 --burp.jar=burpsuite_pro_v1.7.37.jar \
---config-file=burp-default-project-options.json --user-config-file=burp-user-options.json
+--burp.ext=burp-retire-js-3.jar \
+--config-file=burp-default-project-options.json \
+--user-config-file=burp-user-options.json
 ```
 
 BurpControl can also start up Burp in the background with the command 'burpctl start'.
@@ -50,10 +53,11 @@ BurpControl can also start up Burp in the background with the command 'burpctl s
 {
   "burpApiJar": "burp-rest-api-2.0.1.jar",
   "burpJar": "burpsuite_pro_v1.7.37.jar",
+  "burpExtensions": [ "burp-retire-js-3.jar"],
   "burpOptions": [
-    "-Xmx1024M",
-    "--headless.mode=true"
+    "-Xmx1024M"
   ],
+  "headless": false,
   "proxyUrl": "localhost:8080",
   "apiUrl": "http://localhost:8090",
   "reportType": "HTLM",

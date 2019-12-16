@@ -1,31 +1,36 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
 
 function burpJar() {
-    const pack = 'burp-suite/package.json';
-    try {
-        let packPath = require.resolve(pack);
-        let lib = require(packPath).burpJar;
-        return path.join(path.dirname(packPath), lib);
-    } catch (error) {
-        if (error.code != 'MODULE_NOT_FOUND') {
-            throw new Error('Unable to locate {}'.format(pack));
-        }
-        throw error;
-    }
+    let packPath = packagePath();
+    let lib = require(packPath).burpJar;
+    return path.join(path.dirname(packPath), lib);
 }
 
 function burpApiJar() {
-    const pack = 'burp-suite/package.json';
-    try {
-        let packPath = require.resolve(pack);
-        let lib = require(packPath).burpApiJar;
-        return path.join(path.dirname(packPath), lib);
+    let packPath = packagePath();
+    let lib = require(packPath).burpApiJar;
+    return path.join(path.dirname(packPath), lib);
+}
 
+function burpExtensions() {
+    let packPath = packagePath();
+    let extPath = require(packPath).burpExtensions;
+    let extDir = path.join(path.dirname(packPath), extPath);
+    return fs.readdirSync(extDir)
+        .filter((f) => f.endsWith('.jar'))
+        .map((f) => path.join(extDir, f));
+
+}
+
+function packagePath() {
+    try {
+        return require.resolve('burp-suite/package.json');
     } catch (error) {
         if (error.code != 'MODULE_NOT_FOUND') {
-            throw new Error('Unable to locate {}'.format(pack));
+            throw new Error('Unable to locate {}'.format('burp-suite/package.json'));
         }
         throw error;
     }
@@ -33,3 +38,4 @@ function burpApiJar() {
 
 module.exports.burpJar = burpJar;
 module.exports.burpApiJar = burpApiJar;
+module.exports.burpExtensions = burpExtensions;

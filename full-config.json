@@ -1,8 +1,14 @@
 {
+  "burpJar": "/Users/had/Projects/burp-suite/lib//burpsuite_pro_v1.7.37.jar",
+  "burpApiJar": "/Users/had/Projects/burp-suite/lib/burp-rest-api-2.0.1.jar",
+  "burpExtensions": [
+    ",/Users/had/Projects/burp-suite/lib/extensions/burp-retire-js-3.jar",
+    "/Users/had/Projects/burp-suite/lib/extensions/J2EEScan-1.2.5-jar-with-dependencies.jar"
+  ],
   "burpOptions": [
     "-Xmx1024M"
   ],
-  "headless": false,
+  "headless": true,
   "proxyUrl": "localhost:8888",
   "apiUrl": "http://localhost:8090",
   "reportType": "HTLM",

@@ -120,6 +120,11 @@ async function startAction(configfile) {
         if (config.burpOptions) {
             options = options.concat(config.burpOptions);
         }
+        if (config.burpExtensions) {
+            config.burpExtensions.forEach(function(entry) {
+                options = options.concat('--burp.ext=' + entry);
+            });
+        }
 
         let prc = spawn('java',  options, {
             shell: false,
@@ -401,15 +406,20 @@ function loadConfiguration(filename) {
 }
 
 function supplementDefaultConfig(config) {
-    if (!config.hasOwnProperty('burpApiJar')) {
+
+    if (!Reflect.has(config, 'burpApiJar')) {
         config.burpApiJar = burplocator.burpApiJar();
     }
-    if (!config.hasOwnProperty('burpJar')) {
+    if (!Reflect.has(config, 'burpJar')) {
         config.burpJar = burplocator.burpJar();
     }
-    if (!config.hasOwnProperty('headless')) {
+    if (!Reflect.has(config, 'headless')) {
         config.headless = true;
     }
+    if (!Reflect.has(config, 'burpExtensions')) {
+        config.burpExtensions = burplocator.burpExtensions();
+    }
+
     return config;
 }
 
